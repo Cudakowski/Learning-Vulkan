@@ -12,9 +12,11 @@ void SspWindow::initWindow()
 {
     glfwInit();
     glfwWindowHint(GLFW_CLIENT_API,GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE,GLFW_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE,GLFW_TRUE);
 
     window = glfwCreateWindow(width, height ,windowName.c_str(),nullptr,nullptr);
+    glfwSetWindowUserPointer(window, this);
+    glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 }
 
 
@@ -30,6 +32,14 @@ void SspWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface )
     {
         throw std::runtime_error("failed to create window surface");
     }
+}
+
+void SspWindow::framebufferResizeCallback(GLFWwindow *window, int width, int height)
+{
+    auto sspWindow = reinterpret_cast<SspWindow *>(glfwGetWindowUserPointer(window));
+    sspWindow->framebufferResized=true;
+    sspWindow->width=width;
+    sspWindow->height=height;
 }
 
 

@@ -9,7 +9,7 @@ fragObjFiles = $(patsubst %.frag, %.frag.spv, $(fragSources))
 
 GLSLC = /usr/local/bin/glslc
 
-TARGET = VulkanTest
+TARGET = VulkanTest.out
 
 $(TARGET): $(vertObjFiles) $(fragObjFiles)
 $(TARGET): *.cpp *.hpp

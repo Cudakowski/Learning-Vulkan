@@ -29,11 +29,14 @@ private:
     void createPipelineLayout();
     void createPipeline();
     void createCommandBuffers();
+    void freeCommandBuffers();
     void drawFrame();
+    void recreateSwapChain();
+    void recordCommandBuffer(int imageIndex);
 
     SspWindow sspWindow{WIDTH,HEIGHT, "Hello!"};
     SspDevice sspDevice{sspWindow};
-    SspSwapChain sspSwapChain{sspDevice, sspWindow.getExtent()};
+    std::unique_ptr<SspSwapChain> sspSwapChain;
 
     std::unique_ptr<SspPipeline> sspPipeline;
     VkPipelineLayout pipelineLayout;

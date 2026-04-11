@@ -13,6 +13,20 @@ namespace ssp {
 
 SspSwapChain::SspSwapChain(SspDevice &deviceRef, VkExtent2D extent)
     : device{deviceRef}, windowExtent{extent} {
+  init();
+}
+
+SspSwapChain::SspSwapChain(SspDevice &deviceRef, VkExtent2D extent,std::shared_ptr<SspSwapChain> previous)
+    : device{deviceRef}, windowExtent{extent}, oldSwapChain{previous} {
+  init();
+
+  //clean up old swap chain since it's no loger needed;
+  oldSwapChain=nullptr;
+}
+
+
+void SspSwapChain::init()
+{
   createSwapChain();
   createImageViews();
   createRenderPass();
@@ -162,7 +176,7 @@ void SspSwapChain::createSwapChain() {
   createInfo.presentMode = presentMode;
   createInfo.clipped = VK_TRUE;
 
-  createInfo.oldSwapchain = VK_NULL_HANDLE;
+  createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
   if (vkCreateSwapchainKHR(device.device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
     throw std::runtime_error("failed to create swap chain!");
