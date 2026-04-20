@@ -2,9 +2,9 @@
 
 #include "ssp_window.hpp"
 #include "ssp_pipeline.hpp"
+#include "ssp_game_object.hpp"
 #include "ssp_device.hpp"
 #include "ssp_swap_chain.hpp"
-#include "ssp_model.hpp"
 
 #include <memory>
 #include <vector>
@@ -25,7 +25,7 @@ public:
 
     void run();
 private:
-    void loadModels();
+    void loadGameObjects();
     void createPipelineLayout();
     void createPipeline();
     void createCommandBuffers();
@@ -33,6 +33,7 @@ private:
     void drawFrame();
     void recreateSwapChain();
     void recordCommandBuffer(int imageIndex);
+    void renderGameObjects(VkCommandBuffer commandBuffer);
 
     SspWindow sspWindow{WIDTH,HEIGHT, "Hello!"};
     SspDevice sspDevice{sspWindow};
@@ -41,7 +42,7 @@ private:
     std::unique_ptr<SspPipeline> sspPipeline;
     VkPipelineLayout pipelineLayout;
     std::vector<VkCommandBuffer> commandBuffers;
-    std::unique_ptr<SspModel> sspModel;
+    std::vector<SspGameObject> gameObjects;
 
 };
 
