@@ -1,10 +1,9 @@
 #pragma once
 
 #include "ssp_window.hpp"
-#include "ssp_pipeline.hpp"
 #include "ssp_game_object.hpp"
 #include "ssp_device.hpp"
-#include "ssp_swap_chain.hpp"
+#include "ssp_renderer.hpp"
 
 #include <memory>
 #include <vector>
@@ -26,22 +25,10 @@ public:
     void run();
 private:
     void loadGameObjects();
-    void createPipelineLayout();
-    void createPipeline();
-    void createCommandBuffers();
-    void freeCommandBuffers();
-    void drawFrame();
-    void recreateSwapChain();
-    void recordCommandBuffer(int imageIndex);
-    void renderGameObjects(VkCommandBuffer commandBuffer);
 
     SspWindow sspWindow{WIDTH,HEIGHT, "Hello!"};
     SspDevice sspDevice{sspWindow};
-    std::unique_ptr<SspSwapChain> sspSwapChain;
-
-    std::unique_ptr<SspPipeline> sspPipeline;
-    VkPipelineLayout pipelineLayout;
-    std::vector<VkCommandBuffer> commandBuffers;
+    SspRenderer sspRenderer{sspWindow, sspDevice};
     std::vector<SspGameObject> gameObjects;
 
 };
