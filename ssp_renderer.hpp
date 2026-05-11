@@ -18,6 +18,7 @@ public:
   SspRenderer &operator=(const SspRenderer &) = delete;
 
   VkRenderPass getSwapChainRenderPass() const {return sspSwapChain->getRenderPass();}
+  float getAspectRatio() const {return sspSwapChain->extentAspectRatio();}
   bool isFrameInProgress() const { return isFrameStarted; }
 
   VkCommandBuffer getCurrentCommandBuffer() const {

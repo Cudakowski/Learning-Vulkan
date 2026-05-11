@@ -1,5 +1,6 @@
 #include "first_app.hpp"
 
+#include "ssp_camera.hpp"
 #include "simple_render_system.hpp"
 
 // libs
@@ -22,13 +23,19 @@ FirstApp::~FirstApp() {}
 
 void FirstApp::run() {
   SimpleRenderSystem simpleRenderSystem{sspDevice, sspRenderer.getSwapChainRenderPass()};
+  SspCamera camera{};
+  
 
   while (!sspWindow.shouldClose()) {
     glfwPollEvents();
-    
+
+    float aspect = sspRenderer.getAspectRatio();
+    //camera.setOrthographicProjection(-aspect,aspect,-1,1,-1,1);
+    camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
+
     if(auto commandBuffer = sspRenderer.beginFrame()){
       sspRenderer.beginSwapChainRenderPass(commandBuffer);
-      simpleRenderSystem.renderGameObjects(commandBuffer, gameObjects);
+      simpleRenderSystem.renderGameObjects(commandBuffer, gameObjects,camera);
       sspRenderer.endSwapChainRenderPass(commandBuffer);
       sspRenderer.endFrame();
     }
@@ -107,7 +114,7 @@ void FirstApp::loadGameObjects() {
 
   auto cube = SspGameObject::createGameObject();
   cube.model = sspModel;
-  cube.transform.translation = {0.0f, 0.0f, 0.5f};
+  cube.transform.translation = {0.0f, 0.0f, 2.5f};
   cube.transform.scale = {0.5f, 0.5f, 0.5f};
   gameObjects.push_back(std::move(cube));
 }
