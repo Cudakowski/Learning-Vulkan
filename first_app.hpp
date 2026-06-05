@@ -26,7 +26,7 @@ public:
 private:
     void loadGameObjects();
 
-    SspWindow sspWindow{WIDTH,HEIGHT, "Hello!"};
+    SspWindow sspWindow{WIDTH,HEIGHT, "MAKAPAKA"};
     SspDevice sspDevice{sspWindow};
     SspRenderer sspRenderer{sspWindow, sspDevice};
     std::vector<SspGameObject> gameObjects;
