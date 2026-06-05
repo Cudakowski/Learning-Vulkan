@@ -7,7 +7,8 @@ vertObjFiles = $(patsubst %.vert, %.vert.spv, $(vertSources))
 fragSources = $(shell find ./shaders -type f -name "*.frag")
 fragObjFiles = $(patsubst %.frag, %.frag.spv, $(fragSources))
 
-GLSLC = /usr/local/bin/glslc
+#GLSLC = /usr/local/bin/glslc
+GLSLC = /bin/glslc
 
 TARGET = VulkanTest.out
 
