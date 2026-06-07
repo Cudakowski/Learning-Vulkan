@@ -24,8 +24,13 @@ class SspModel
             static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
         };
 
+        struct Builder{
+            std::vector<Vertex> vertices{};
+            std::vector<uint32_t> indices{};
+        };
 
-        SspModel(SspDevice &device, const std::vector<Vertex> &vertices);
+
+        SspModel(SspDevice &device, const SspModel::Builder &builder);
         ~SspModel();
 
         SspModel(const SspModel &)=delete;
@@ -35,12 +40,19 @@ class SspModel
         void draw(VkCommandBuffer commandBuffer);
 
     private:
-        void createVertexBuffer(const std::vector<Vertex> &vertices);
+        void createVertexBuffers(const std::vector<Vertex> &vertices);
+        void createIndexBuffers(const std::vector<uint32_t> &indeces);
 
         SspDevice& sspDevice;
+
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
         uint32_t vertexCount;
+
+        bool hasIndexBuffer = false;
+        VkBuffer indexBuffer;
+        VkDeviceMemory indexBufferMemory;
+        uint32_t indexCount;
 
     
 };
