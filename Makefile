@@ -1,4 +1,5 @@
-CFLAGS = -std=c++17 -O2
+TINYOBJ_PATH = /home/wojciech/MojeRzeczy/Code/C++/libs
+CFLAGS = -std=c++17 -O2 -I$(TINYOBJ_PATH)
 LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 
 # create list of all spv files and set as dependency
