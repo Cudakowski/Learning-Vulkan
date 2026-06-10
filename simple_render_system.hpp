@@ -4,6 +4,7 @@
 #include "ssp_device.hpp"
 #include "ssp_game_object.hpp"
 #include "ssp_pipeline.hpp"
+#include "ssp_frame_info.hpp"
 
 #include <memory>
 #include <vector>
@@ -18,9 +19,9 @@ public:
   SimpleRenderSystem &operator=(const SimpleRenderSystem &) = delete;
 
   void renderGameObjects(
-      VkCommandBuffer commandBuffer,
-      std::vector<SspGameObject> &gameObjects,
-      const SspCamera &camera);
+      FrameInfo& frameInfo,
+      std::vector<SspGameObject> &gameObjects
+    );
 
 private:
   void createPipelineLayout();

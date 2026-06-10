@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ssp_device.hpp"
+#include "ssp_buffer.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -59,13 +60,11 @@ class SspModel
 
         SspDevice& sspDevice;
 
-        VkBuffer vertexBuffer;
-        VkDeviceMemory vertexBufferMemory;
+        std::unique_ptr<SspBuffer> vertexBuffer;
         uint32_t vertexCount;
 
         bool hasIndexBuffer = false;
-        VkBuffer indexBuffer;
-        VkDeviceMemory indexBufferMemory;
+        std::unique_ptr<SspBuffer> indexBuffer;
         uint32_t indexCount;
 
     

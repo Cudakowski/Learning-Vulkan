@@ -36,16 +36,7 @@ SspModel::SspModel(SspDevice &device, const SspModel::Builder &builder) : sspDev
 }
 
 
-SspModel::~SspModel()
-{
-    vkDestroyBuffer(sspDevice.device(), vertexBuffer, nullptr);
-    vkFreeMemory(sspDevice.device(),vertexBufferMemory, nullptr);
-
-    if (hasIndexBuffer){
-        vkDestroyBuffer(sspDevice.device(), indexBuffer, nullptr);
-        vkFreeMemory(sspDevice.device(),indexBufferMemory, nullptr);
-    }
-}
+SspModel::~SspModel() {}
 
 std::unique_ptr<SspModel> SspModel::createModelFromFile(SspDevice &device, const std::string &filepath)
 {
@@ -59,35 +50,28 @@ void SspModel::createVertexBuffers(const std::vector<Vertex> &vertices)
     vertexCount = static_cast<uint32_t>(vertices.size());
     assert(vertexCount >=3 && "Vertex count must be at least 3");
     VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
+    uint32_t vertexSize = sizeof(vertices[0]);
 
-    VkBuffer stagingBuffer;
-    VkDeviceMemory stagingBufferMemory;
-    sspDevice.createBuffer(
-        bufferSize,
+    SspBuffer stagingBuffer{
+        sspDevice,
+        vertexSize,
+        vertexCount,
         VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-        stagingBuffer,
-        stagingBufferMemory
-    );
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+    };
 
-    void *data;
-    vkMapMemory(sspDevice.device(), stagingBufferMemory, 0 , bufferSize, 0 , &data);
-    memcpy(data, vertices.data(), static_cast<size_t>(bufferSize));
-    vkUnmapMemory(sspDevice.device(), stagingBufferMemory);
+    stagingBuffer.map();
+    stagingBuffer.writeToBuffer((void *)vertices.data() );
 
-    sspDevice.createBuffer(
-        bufferSize,
+    vertexBuffer = std::make_unique<SspBuffer>(
+        sspDevice,
+        vertexSize,
+        vertexCount,
         VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-        vertexBuffer,
-        vertexBufferMemory
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
     );
 
-    sspDevice.copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
-
-    vkDestroyBuffer(sspDevice.device(), stagingBuffer, nullptr);
-    vkFreeMemory(sspDevice.device(),stagingBufferMemory, nullptr);
-
+    sspDevice.copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
 }
 
 void SspModel::createIndexBuffers(const std::vector<uint32_t> &indeces)
@@ -100,34 +84,28 @@ void SspModel::createIndexBuffers(const std::vector<uint32_t> &indeces)
     }
 
     VkDeviceSize bufferSize = sizeof(indeces[0]) * indexCount;
+    uint32_t indexSize = sizeof(indeces[0]);
 
-    VkBuffer stagingBuffer;
-    VkDeviceMemory stagingBufferMemory;
-    sspDevice.createBuffer(
-        bufferSize,
+    SspBuffer stagingBuffer{
+        sspDevice,
+        indexSize,
+        indexCount,
         VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-        stagingBuffer,
-        stagingBufferMemory
-    );
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+    };
 
-    void *data;
-    vkMapMemory(sspDevice.device(), stagingBufferMemory, 0 , bufferSize, 0 , &data);
-    memcpy(data, indeces.data(), static_cast<size_t>(bufferSize));
-    vkUnmapMemory(sspDevice.device(), stagingBufferMemory);
+    stagingBuffer.map();
+    stagingBuffer.writeToBuffer((void *)indeces.data() );
 
-    sspDevice.createBuffer(
-        bufferSize,
+    indexBuffer = std::make_unique<SspBuffer>(
+        sspDevice,
+        indexSize,
+        indexCount,
         VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-        indexBuffer,
-        indexBufferMemory
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
     );
 
-    sspDevice.copyBuffer(stagingBuffer, indexBuffer, bufferSize);
-
-    vkDestroyBuffer(sspDevice.device(), stagingBuffer, nullptr);
-    vkFreeMemory(sspDevice.device(),stagingBufferMemory, nullptr);
+    sspDevice.copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
 }
 
 
@@ -142,12 +120,12 @@ void SspModel::draw(VkCommandBuffer commandBuffer)
 
 void SspModel::bind(VkCommandBuffer commandBuffer)
 {
-    VkBuffer buffers[]={vertexBuffer};
+    VkBuffer buffers[]={vertexBuffer->getBuffer()};
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(commandBuffer,0,1,buffers,offsets);
 
     if ( hasIndexBuffer) {
-        vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
     }
 }
 
