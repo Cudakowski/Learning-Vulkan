@@ -12,7 +12,7 @@
 namespace ssp {
 class SimpleRenderSystem {
 public:
-  SimpleRenderSystem(SspDevice &device, VkRenderPass renderPass);
+  SimpleRenderSystem(SspDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
   ~SimpleRenderSystem();
 
   SimpleRenderSystem(const SimpleRenderSystem &) = delete;
@@ -24,7 +24,7 @@ public:
     );
 
 private:
-  void createPipelineLayout();
+  void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
   void createPipeline(VkRenderPass renderPass);
 
   SspDevice &sspDevice;

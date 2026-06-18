@@ -13,6 +13,7 @@ struct FrameInfo {
     float frameTime;
     VkCommandBuffer commandBuffer;
     SspCamera &camera;
+    VkDescriptorSet globalDescriptorSet;
 };
 
 } // namespace ssp

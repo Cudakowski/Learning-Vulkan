@@ -4,6 +4,7 @@
 #include "ssp_game_object.hpp"
 #include "ssp_device.hpp"
 #include "ssp_renderer.hpp"
+#include "ssp_descriptors.hpp"
 
 #include <memory>
 #include <vector>
@@ -29,6 +30,9 @@ private:
     SspWindow sspWindow{WIDTH,HEIGHT, "MAKAPAKA"};
     SspDevice sspDevice{sspWindow};
     SspRenderer sspRenderer{sspWindow, sspDevice};
+
+    // order of declarations matters
+    std::unique_ptr<SspDescriptorPool> globalPool{};
     std::vector<SspGameObject> gameObjects;
 
 };
