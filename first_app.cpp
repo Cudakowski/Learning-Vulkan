@@ -19,8 +19,10 @@
 namespace ssp {
 
 struct GlobalUbo {
-  alignas(16) glm::mat4 projectionView{1.f};
-  alignas(16) glm::vec3 lightDirection = glm::normalize(glm::vec3{1.f,-3.f,-1.f});
+  glm::mat4 projectionView{1.f};
+  glm::vec4 ambientLightColor{1.f,1.f,1.f,0.02f}; //w is intensity
+  glm::vec3 lightPosition{-1.f};
+  alignas(16) glm::vec4 lightColor{1.f}; // w is light density
 };
 
 FirstApp::FirstApp() {
@@ -67,6 +69,7 @@ void FirstApp::run() {
   camera.setViewTarget(glm::vec3(-1.0f,-2.0f,2.0f),glm::vec3(0.0f,0.0f,2.5f));
   
   auto viewerObject = SspGameObject::createGameObject();
+  viewerObject.transform.translation.z = -2.5f;
   KeyboardMovementController cameraController{};
 
   auto currentTime = std::chrono::high_resolution_clock::now();
@@ -81,7 +84,7 @@ void FirstApp::run() {
     cameraController.moveInPlaneXZ(sspWindow.getGLFWwindow(), frameTime, viewerObject);
     camera.setViewYXZ(viewerObject.transform.translation,viewerObject.transform.rotation);
     float aspect = sspRenderer.getAspectRatio();
-    camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
+    camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
 
     if(auto commandBuffer = sspRenderer.beginFrame()){
       int frameIndex = sspRenderer.getFrameIndex();
@@ -107,13 +110,30 @@ void FirstApp::run() {
 
 
 void FirstApp::loadGameObjects() {
-  std::shared_ptr<SspModel> sspModel = SspModel::createModelFromFile(sspDevice, "models/smooth_vase.obj");
+  std::shared_ptr<SspModel> sspModel = 
+      SspModel::createModelFromFile(sspDevice, "models/flat_vase.obj");
 
-  auto gameObject = SspGameObject::createGameObject();
-  gameObject.model = sspModel;
-  gameObject.transform.translation = {0.0f, 0.0f, 2.5f};
-  gameObject.transform.scale = glm::vec3{3.f};
-  gameObjects.push_back(std::move(gameObject));
+  auto flatVase = SspGameObject::createGameObject();
+  flatVase.model = sspModel;
+  flatVase.transform.translation = {-0.5f, 0.5f, 0.f};
+  flatVase.transform.scale = glm::vec3{3.f,1.5f,3.f};
+  gameObjects.push_back(std::move(flatVase));
+
+  sspModel = 
+      SspModel::createModelFromFile(sspDevice, "models/smooth_vase.obj");
+  auto smoothVase = SspGameObject::createGameObject();
+  smoothVase.model = sspModel;
+  smoothVase.transform.translation = {0.5f, 0.5f, 0.f};
+  smoothVase.transform.scale = glm::vec3{3.f,1.5f,3.f};
+  gameObjects.push_back(std::move(smoothVase));
+
+  sspModel = 
+      SspModel::createModelFromFile(sspDevice, "models/quad.obj");
+  auto floor = SspGameObject::createGameObject();
+  floor.model = sspModel;
+  floor.transform.translation = {0.f, 0.5f, 0.f};
+  floor.transform.scale = glm::vec3{3.f,1.f,3.f};
+  gameObjects.push_back(std::move(floor));
 }
 
 } // namespace ssp
