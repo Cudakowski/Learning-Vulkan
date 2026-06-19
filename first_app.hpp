@@ -33,7 +33,7 @@ private:
 
     // order of declarations matters
     std::unique_ptr<SspDescriptorPool> globalPool{};
-    std::vector<SspGameObject> gameObjects;
+    SspGameObject::Map gameObjects;
 
 };
 

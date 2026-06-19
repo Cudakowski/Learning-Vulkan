@@ -7,6 +7,7 @@
 
 // std
 #include <memory>
+#include <unordered_map>
 
 namespace ssp
 {
@@ -29,6 +30,7 @@ struct TransformComponent{
   class SspGameObject{
     public:
     using id_t = unsigned int;
+    using Map = std::unordered_map<id_t, SspGameObject>;
 
     static SspGameObject createGameObject(){
         static id_t currentId = 0;

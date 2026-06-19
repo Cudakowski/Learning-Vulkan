@@ -53,7 +53,7 @@ void FirstApp::run() {
   }
 
   auto globalSetLayout = SspDescriptorSetLayout::Builder(sspDevice)
-    .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+    .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
     .build();
 
   std::vector<VkDescriptorSet> globalDescriptorSets(SspSwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -88,7 +88,14 @@ void FirstApp::run() {
 
     if(auto commandBuffer = sspRenderer.beginFrame()){
       int frameIndex = sspRenderer.getFrameIndex();
-      FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera, globalDescriptorSets[frameIndex]};
+      FrameInfo frameInfo{
+        frameIndex, 
+        frameTime, 
+        commandBuffer, 
+        camera, 
+        globalDescriptorSets[frameIndex],
+        gameObjects
+      };
 
       // update
       GlobalUbo ubo{};
@@ -98,7 +105,7 @@ void FirstApp::run() {
 
       // render
       sspRenderer.beginSwapChainRenderPass(commandBuffer);
-      simpleRenderSystem.renderGameObjects(frameInfo, gameObjects);
+      simpleRenderSystem.renderGameObjects(frameInfo);
       sspRenderer.endSwapChainRenderPass(commandBuffer);
       sspRenderer.endFrame();
     }
@@ -117,7 +124,7 @@ void FirstApp::loadGameObjects() {
   flatVase.model = sspModel;
   flatVase.transform.translation = {-0.5f, 0.5f, 0.f};
   flatVase.transform.scale = glm::vec3{3.f,1.5f,3.f};
-  gameObjects.push_back(std::move(flatVase));
+  gameObjects.emplace(flatVase.getId(), std::move(flatVase));
 
   sspModel = 
       SspModel::createModelFromFile(sspDevice, "models/smooth_vase.obj");
@@ -125,7 +132,7 @@ void FirstApp::loadGameObjects() {
   smoothVase.model = sspModel;
   smoothVase.transform.translation = {0.5f, 0.5f, 0.f};
   smoothVase.transform.scale = glm::vec3{3.f,1.5f,3.f};
-  gameObjects.push_back(std::move(smoothVase));
+  gameObjects.emplace(smoothVase.getId(), std::move(smoothVase));
 
   sspModel = 
       SspModel::createModelFromFile(sspDevice, "models/quad.obj");
@@ -133,7 +140,7 @@ void FirstApp::loadGameObjects() {
   floor.model = sspModel;
   floor.transform.translation = {0.f, 0.5f, 0.f};
   floor.transform.scale = glm::vec3{3.f,1.f,3.f};
-  gameObjects.push_back(std::move(floor));
+  gameObjects.emplace(floor.getId(), std::move(floor));
 }
 
 } // namespace ssp
