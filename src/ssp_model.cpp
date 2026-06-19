@@ -13,6 +13,10 @@
 #include <cstring>
 #include <unordered_map>
 
+#ifndef ENGINE_DIR
+#define ENGINE_DIR "../"
+#endif
+
 namespace std
 {
 template<>
@@ -41,7 +45,7 @@ SspModel::~SspModel() {}
 std::unique_ptr<SspModel> SspModel::createModelFromFile(SspDevice &device, const std::string &filepath)
 {
     Builder builder{};
-    builder.loadModel(filepath);
+    builder.loadModel(ENGINE_DIR + filepath);
     return std::make_unique<SspModel>(device,builder);
 }
 
