@@ -27,30 +27,40 @@ struct TransformComponent{
 
 };
 
-  class SspGameObject{
-    public:
-    using id_t = unsigned int;
-    using Map = std::unordered_map<id_t, SspGameObject>;
+struct PointLightComponent {
+  float lightIntensity = 1.0f;
+};
 
-    static SspGameObject createGameObject(){
-        static id_t currentId = 0;
-        return SspGameObject{currentId++};
-    }
+class SspGameObject{
+  public:
+  using id_t = unsigned int;
+  using Map = std::unordered_map<id_t, SspGameObject>;
 
-    SspGameObject(const SspGameObject &)=delete;
-    SspGameObject &operator=(const SspGameObject &) = delete;
-    SspGameObject(SspGameObject &&) =default;
-    SspGameObject &operator=(SspGameObject &&) = default;
+  static SspGameObject createGameObject(){
+      static id_t currentId = 0;
+      return SspGameObject{currentId++};
+  }
 
-    id_t getId() const {return id;}
+  static SspGameObject makePointLight(float intensity =10.f, float radius = 0.1f, glm::vec3 color = glm::vec3(1.f));
 
-    std::shared_ptr<SspModel> model{};
-    glm::vec3 color{};
-    TransformComponent transform{};
+  SspGameObject(const SspGameObject &)=delete;
+  SspGameObject &operator=(const SspGameObject &) = delete;
+  SspGameObject(SspGameObject &&) =default;
+  SspGameObject &operator=(SspGameObject &&) = default;
 
-    private:
-    id_t id;
+  id_t getId() const {return id;}
 
-    SspGameObject(id_t objId): id{objId} {}
-  };
+  glm::vec3 color{};
+  TransformComponent transform{};
+  
+  // Optional pointer components
+  std::shared_ptr<SspModel> model{};
+  std::unique_ptr<PointLightComponent> pointLight = nullptr;
+
+  private:
+  id_t id;
+
+  SspGameObject(id_t objId): id{objId} {}
+};
+
 } // namespace ssp
