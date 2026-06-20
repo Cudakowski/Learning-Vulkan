@@ -103,8 +103,11 @@ void FirstApp::run() {
 
       // render
       sspRenderer.beginSwapChainRenderPass(commandBuffer);
+      
+      // order here matters
       simpleRenderSystem.renderGameObjects(frameInfo);
       pointLightSystem.render(frameInfo);
+
       sspRenderer.endSwapChainRenderPass(commandBuffer);
       sspRenderer.endFrame();
     }
